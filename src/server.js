@@ -82,7 +82,7 @@ app.route("/password-edit/:id").get(async (req, res) => {
 
 // Create a new password
 app.route("/passwords-edit").post(async (req, res) => {
-    const doc = new Password(req.body);
+    const doc = new passwordModel(req.body);
 
     const result = await doc.save();
 
