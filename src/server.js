@@ -20,12 +20,13 @@ const collectionName = "passwords";
 // database connection string
 const dbUrl = 'mongodb+srv://admin:xOuG5xzD7E4ZZCdF@mycluster.upxjjyn.mongodb.net/?retryWrites=true&w=majority'
 
-// database connection & start web server
+// create database connection
 mongoose.connect(dbUrl, {
   dbName: dbName
   })
   .then(() => {
     console.log("Connected to DB");
+    // start listening to the port
     app.listen(port, () => {
       console.log("Listening on " + port + ".");
     });  
@@ -55,7 +56,7 @@ const passwordSchema = new mongoose.Schema({
 })
 
 // create model from schema
-const passwordModel = mongoose.model(name='Password', schema=passwordSchema, collection=collectionName);
+const passwordModel = mongoose.model(collectionName, schema=passwordSchema);
 
 // get all passwords
 app.route("/passwords").get(async (req, res) => {
