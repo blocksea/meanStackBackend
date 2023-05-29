@@ -34,7 +34,7 @@ mongoose.connect(dbUrl, {
     console.log("Error connecting to DB", err);
   })
 
-//mongoose schema and models
+// create mongoose schema
 const passwordSchema = new mongoose.Schema({
   category: {
     type: String,
@@ -54,11 +54,10 @@ const passwordSchema = new mongoose.Schema({
   }
 })
 
-const passwordModel = mongoose.model('Password', passwordSchema);
+// create model from schema
+const passwordModel = mongoose.model(name='Password', schema=passwordSchema, collection=collectionName);
 
-// Define server routes
 // List all passwords
-// TODO: Task - Write whole GET Request
 app.route("/passwords").get(async (req, res) => {
     let passwords = [];
   
