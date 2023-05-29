@@ -57,62 +57,85 @@ const passwordSchema = new mongoose.Schema({
 // create model from schema
 const passwordModel = mongoose.model(name='Password', schema=passwordSchema, collection=collectionName);
 
-// List all passwords
+// get all passwords
 app.route("/passwords").get(async (req, res) => {
     let passwords = [];
   
     passwords = await passwordModel.find({});
 
-    res.json(passwords);
+    try{
+      res.json(passwords);
+      console.log("All passwords found");
+    } catch(err) {
+      console.log("Error getting all passwords", err);
+    }
 });
 
-// Get a password
+// get a specific password
 app.route("/password-edit/:id").get(async (req, res) => {
     const id = req.params.id;
-    const result = await passwordModel.findOne({_id: new ObjectId(id)});
-  
-    if (!result) {
-      res.status(404).json({error: "Could not find"});
-      return;
+
+    try{
+      const result = await passwordModel.findOne({_id: new ObjectId(id)});
+
+      if (!result) {
+        console.log("Password not found");
+        return;
+      }
+      res.json(result);
+      console.log("password found");
+    } catch(err) {
+      console.log("Error getting specific password(password was found)", err);
     }
-  
-    res.json(result);
 });
 
-// Create a new password
+// create a new password
 app.route("/passwords-edit").post(async (req, res) => {
     const doc = new passwordModel(req.body);
 
-    const result = await doc.save();
-
-    res.status(201).json({ _id: result.insertedId });
+    try {
+      await doc.save();
+      
+      res.json({ _id: result.insertedId });
+    } catch(err) {
+      console.log("Error creating new password", err);
+    }
   });
 
-// Update a password
+// update a password
 app.route("/passwords-edit/:id").put(async (req, res) => {
     const id = req.params.id;
-    const doc = req.body;
+    const docBody = req.body;
 
-    // make sure the id field is correct object type
-    doc._id = new ObjectId(id);
+    try {
+      const result = await passwordModel.findByIdAndUpdate(id, docBody);
+      await passwordModel.save();
 
-    const result = await passwordModel
-                            .findByIdAndUpdate(req.params.id, req.body);
-  
-    if (result.matchedCount == 0) {
-      res.status(404).json({});
-      return;
+      if (result.matchedCount == 0) {
+        console.log("Could not find password to update");
+        return;
+      }
+
+      res.json({});
+    } catch(err) {
+      console.log("Error updating a password", err);
     }
-  
-    res.json({});
   });
 
-// Delete a person
+// delete a password
 app.route("/passwords/:id").delete(async (req, res) => {
     const id = req.params.id;
-  
-    // TODO: Task - Write delete query only
-    await passwordModel.findByIdAndDelete(req.params.id);
-  
-    res.json({});
+
+    try {
+      const result = await passwordModel.findByIdAndDelete(id);
+
+      if (!result) {
+        res.status(404);
+        console.log("item not found");
+      }
+      res.status(201).send({});
+    } catch(err) {
+      res.status(500);
+      console.log("Error updating a password", err);
+    }
   });
