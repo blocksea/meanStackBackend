@@ -110,7 +110,6 @@ app.route("/passwords-edit/:id").put(async (req, res) => {
 
     try {
       const result = await passwordModel.findByIdAndUpdate(id, docBody);
-      await passwordModel.save();
 
       if (result.matchedCount == 0) {
         console.log("Could not find password to update");
